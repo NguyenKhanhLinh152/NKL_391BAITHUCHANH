@@ -1,4 +1,4 @@
-namespace NKL_391BAITHUCHANH.Models;
+namespace DemoMvc.Models;
 
 public class ErrorViewModel
 {
