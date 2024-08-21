@@ -18,6 +18,14 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpPost]
+    public IActionResult Index(Student st)
+    {
+        string message = "Id của bạn là: " + st.StudentId + ", tên của bạn là: " + st.StudentName + " nhé";
+        ViewBag.Message = message;
+        return View();
+    }
+
     public IActionResult Privacy()
     {
         return View();
