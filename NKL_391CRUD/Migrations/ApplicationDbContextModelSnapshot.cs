@@ -18,9 +18,8 @@ namespace NKL_391CRUD.Migrations
 
             modelBuilder.Entity("NKL_391CRUD.Models.Student", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("StudentId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("StudentName")
                         .IsRequired()

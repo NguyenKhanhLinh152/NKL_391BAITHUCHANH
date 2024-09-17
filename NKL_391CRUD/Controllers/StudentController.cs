@@ -26,7 +26,7 @@ namespace NKL_391CRUD.Controllers
         }
 
         // GET: Student/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
@@ -66,7 +66,7 @@ namespace NKL_391CRUD.Controllers
         }
 
         // GET: Student/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
@@ -86,7 +86,7 @@ namespace NKL_391CRUD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("StudentId,StudentName")] Student student)
+        public async Task<IActionResult> Edit(string id, [Bind("StudentId,StudentName")] Student student)
         {
             if (id != student.StudentId)
             {
@@ -117,7 +117,7 @@ namespace NKL_391CRUD.Controllers
         }
 
         // GET: Student/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -137,7 +137,7 @@ namespace NKL_391CRUD.Controllers
         // POST: Student/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var student = await _context.Students.FindAsync(id);
             if (student != null)
@@ -149,7 +149,7 @@ namespace NKL_391CRUD.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool StudentExists(int id)
+        private bool StudentExists(string id)
         {
             return _context.Students.Any(e => e.StudentId == id);
         }

@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\NKL_391CRUD.props" />
-</Project>
