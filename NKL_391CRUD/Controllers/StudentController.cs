@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,12 +8,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NKL_391CRUD.Data;
 using NKL_391CRUD.Models;
+using NKL_391CRUD.Models.Process;
+using OfficeOpenXml;
 
 namespace NKL_391CRUD.Controllers
 {
     public class StudentController : Controller
     {
         private readonly ApplicationDbContext _context;
+
+        private ExcelProcess _excelProcess = new ExcelProcess();
 
         public StudentController(ApplicationDbContext context)
         {
@@ -153,5 +158,74 @@ namespace NKL_391CRUD.Controllers
         {
             return _context.Students.Any(e => e.StudentId == id);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            if (file != null)
+            {
+                try
+                {
+                    string fileExtension = Path.GetExtension(file.FileName);
+                    if (fileExtension != ".xls" && fileExtension != ".xlsx")
+                    {
+                        ModelState.AddModelError(string.Empty, "File must be .xls or .xlsx");
+                    }
+                    else
+                    {
+                        var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Excels", fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+
+                            var dt = _excelProcess.ReadExcelToDataTable(filePath);
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                var student = new Student
+                                {
+                                    StudentId = row[0].ToString(),
+                                    StudentName = row[1].ToString(),
+                                };
+                                _context.Add(student);
+                            }
+
+                            await _context.SaveChangesAsync();
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions (e.g., log the error, display a user-friendly message)
+                    ModelState.AddModelError(string.Empty, $"Error processing Excel file: {ex.Message}");
+                }
+            }
+
+            return View();
+        }
+
+        public IActionResult Download(){
+            //Name the file when downloading
+            var fileName = "NguyenKhachLinh15/02" + ".xlsx";
+            using(ExcelPackage excelPackage = new ExcelPackage()){
+                //Create the WorkSheet
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
+                //Add some text to cell A1
+                worksheet.Cells["A1"].Value = "StudentId";
+                worksheet.Cells["B1"].Value = "StudentName";
+                //get all Person
+                var studentsList = _context.Students.ToList();
+                //fill data to worksheet
+                worksheet.Cells["A2"].LoadFromCollection(studentsList);
+                var stream = new MemoryStream(excelPackage.GetAsByteArray());
+                //download file
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+        }
+
     }
 }
