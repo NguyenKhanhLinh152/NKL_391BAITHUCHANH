@@ -15,6 +15,7 @@ namespace DemoMvc.Data
         //Khai báo đối tượng để tạo database
 
         public DbSet<Student> Students { get; set; }
+        public DbSet<Person> Persons { get; set; }
         
         //Kết thúc khai báo đối tượng để tạo database
     }
